@@ -1,0 +1,59 @@
+{
+  "name": "@superblocksteam/python",
+  "version": "0.1684.0",
+  "description": "Superblocks Python Plugin",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": "https://github.com/superblocksteam/python.git",
+  "license": "Superblocks Community Software License",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": "^16.14.0",
+    "npm": "^8.3.1"
+  },
+  "scripts": {
+    "build": "npm run clean && tsc && cp ./src/run.py ./dist/run.py",
+    "clean": "rimraf ./dist *tsbuildinfo",
+    "lint": "eslint . --ext ts",
+    "lint:fix": "eslint . --ext ts --fix",
+    "typecheck": "tsc",
+    "check": "npm run typecheck && npm run lint",
+    "python:test": "nosetests src 2>&1",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@lezer/python": "0.15.0",
+    "@superblocksteam/shared": "^0.x",
+    "@superblocksteam/shared-backend": "^0.x",
+    "minimist": "1.2.6"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.170",
+    "@types/node": "14.14.22",
+    "@typescript-eslint/eslint-plugin": "4.19.0",
+    "@typescript-eslint/parser": "4.19.0",
+    "eslint": "7.23.0",
+    "eslint-config-prettier": "8.1.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-prettier": "3.3.1",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.4",
+    "prettier": "2.2.1",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.2.3",
+    "jest": "26.6.3",
+    "@types/jest": "26.0.24",
+    "ts-jest": "26.5.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsc && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js}": "eslint . --ext ts --cache --fix"
+  }
+}
