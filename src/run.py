@@ -64,6 +64,7 @@ def superblocksReader(name, path, mode=None):
         # https://stackoverflow.com/questions/898669/how-can-i-detect-if-a-file-is-binary-non-text-in-python
         textchars = bytearray({{7,8,9,10,12,13,27}} | set(range(0x20, 0x100)) - {{0x7f}})
         is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
+        f.seek(0)
         bytes = f.read(1024)
         f.seek(0)
         if mode == 'binary' or is_binary_string(bytes):
