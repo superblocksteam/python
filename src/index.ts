@@ -19,7 +19,7 @@ import {
 export default class PythonPlugin extends LanguagePlugin {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async evaluateBindingPairs(code: string, entitiesToExtract: Set<string>, dataContext: Record<string, any>): Promise<EvaluationPair[]> {
-    return await extractPythonEvaluationPairs(code, entitiesToExtract, dataContext, (parser as unknown) as PythonParser);
+    return extractPythonEvaluationPairs(code, entitiesToExtract, dataContext, (parser as unknown) as PythonParser);
   }
 
   async execute({
