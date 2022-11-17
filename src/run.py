@@ -5,6 +5,7 @@ from plotly.graph_objects import Figure as PlotlyFigure
 from plotly.utils import PlotlyJSONEncoder
 import re
 import simplejson as sjson
+from numbers import Number
 
 
 class SuperblocksObject(dict):
@@ -61,10 +62,12 @@ import io
 #              think you can inline functions in python.
 def superblocksReader(name, path, mode=None):
     def serialize(f, name, mode=None):
+        f.seek(0)
+        if mode == 'raw':
+          return f.read()
         # https://stackoverflow.com/questions/898669/how-can-i-detect-if-a-file-is-binary-non-text-in-python
         textchars = bytearray({{7,8,9,10,12,13,27}} | set(range(0x20, 0x100)) - {{0x7f}})
         is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
-        f.seek(0)
         bytes = f.read(1024)
         f.seek(0)
         if mode == 'binary' or is_binary_string(bytes):
@@ -113,6 +116,10 @@ def wrapper():
 """
 errorOffset = len(sharedCode.splitlines())
 
+def encode_value_as_json(value):
+    if isinstance(value, bytes) or isinstance(value, bytearray):
+        return {"type": "Buffer", "data": [x for x in value]}
+    raise TypeError(repr(value) + " is not JSON serializable")
 
 def convert_to_json_by_type(result):
     # Use simplejson dumps with ignore_nan enabled to convert np.nan to null
@@ -120,15 +127,27 @@ def convert_to_json_by_type(result):
     # type detection and convertion for plotly
     if isinstance(result, PlotlyFigure):
         return result.to_json()
-    return sjson.dumps(result, ignore_nan=True)
+    return sjson.dumps(result, ignore_nan=True, encoding=None, default=encode_value_as_json)
 
+def decode_object(value):
+    if (
+        "type" in value
+        and value["type"] == "Buffer"
+        and "data" in value
+        and isinstance(value["data"], list)
+        and all(isinstance(x, Number) for x in value["data"])
+    ):
+        # decodeBytestrings
+        return bytes(value["data"])
+    else:
+        return SuperblocksObject(value)
 
 def main():
     try:
         dataIn = sys.stdin.readline()
 
         # Convert dict to obj so we can use . notation
-        jsonData = json.loads(dataIn, object_hook=lambda d: SuperblocksObject(d))
+        jsonData = json.loads(dataIn, object_hook=decode_object)
 
         meta = jsonData.meta
         context = jsonData.context

@@ -1,6 +1,6 @@
 {
   "name": "@superblocksteam/python",
-  "version": "0.2389.0",
+  "version": "0.2416.0",
   "description": "Superblocks Python Plugin",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
